@@ -5,12 +5,14 @@
  */
 package controller;
 
+import entities.Empleado;
+import exceptions.ExceptionIncidencia;
 import java.io.IOException;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import servlets.ServletIncidencia;
+import model.SessionEJB;
 
 /**
  *
@@ -18,11 +20,26 @@ import servlets.ServletIncidencia;
  */
 public class newWorker {
     
-    @EJB ServletIncidencia miEjb;
+    @EJB SessionEJB miEjb;
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         //Pickup the variable's values.
-    }
+        String name = request.getParameter("name");
+        String surname = request.getParameter("surname");
+        String tlf = request.getParameter("tlf");
+//        int tlf = Integer.parseInt(request.getParameter("tlf"));
+        String city = request.getParameter("city");
+        String password = request.getParameter("password");
+        
+        Empleado e = new Empleado(name, surname, tlf, city, password);
+        
+        try {
+            miEjb.WorkerIn(e);
             
-    
+            request.setAttribute("status", "Worker added");
+        } catch (ExceptionIncidencia ex){
+            request.setAttribute("status", ex.getMessage());
+        }
+        request.getRequestDispatcher("/final.jsp").forward(request, response);
+    }
 }
